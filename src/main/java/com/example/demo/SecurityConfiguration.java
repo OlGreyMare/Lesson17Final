@@ -15,10 +15,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 
         http
                 .authorizeRequests()
+                .antMatchers("/")
+                .access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+                .antMatchers("/admin").access("hasRole('ROLE_ADMIN')")
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .and().httpBasic();
+                .formLogin().loginPage("/login").permitAll()
+                .and()
+                .httpBasic();
 
     }
     @Override
@@ -26,6 +30,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
             throws Exception {
 
             auth.inMemoryAuthentication().
+                    withUser("dave").password("begreat").roles("ADMIN").
+                    and().
                     withUser("user").password("password").roles("USER");
 
     }
